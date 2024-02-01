@@ -1,0 +1,11 @@
+<% @books.each do |book| %>
+    <li>
+        <a href="/books/<%=book[0]%>"><%=book[1]%></a>
+    </li>
+<% end %>
+
+<form action='/books/new' method='post'> 
+  <input type='text' name='name'></input>
+  <input type='text' name='description'></input>
+  <button type='submit'>Send</button>
+</form>

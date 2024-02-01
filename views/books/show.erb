@@ -1,0 +1,13 @@
+<h2><%= @book['name'] %></h2>
+<pre> 
+  <p><%= @book['description'] %></p> 
+</pre>
+
+<% if @user = 'admin' %>
+  <form action='/books/<%= @book['id'] %>/delete' method='post'> 
+    <button type="submit">DELETE</button>
+  </form>
+  <a href='/books/<%= @book['id'] %>/update'> UPDATE </a> <br></br>
+<% end %>
+
+<a href='/books'> Hemsida </a>
