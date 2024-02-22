@@ -3,7 +3,7 @@
   <p><%= @book['description'] %></p> 
 </pre>
 
-<% if @user = 'admin' %>
+<% if @current_user_access['access'] == 'admin' %>
   <form action='/books/<%= @book['id'] %>/delete' method='post'> 
     <button type="submit">DELETE</button>
   </form>
