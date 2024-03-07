@@ -1,13 +1,23 @@
 <h2><%= @book['name'] %></h2>
 <pre> 
   <p><%= @book['description'] %></p> 
+
+  <p><%= @rating['score'] %></p>
 </pre>
 
 <% if @current_user_access['access'] == 'admin' %>
   <form action='/books/<%= @book['id'] %>/delete' method='post'> 
-    <button type="submit">DELETE</button>
+    <button type="submit"> Delete </button>
   </form>
-  <a href='/books/<%= @book['id'] %>/update'> UPDATE </a> <br></br>
+
+  <a href='/books/<%= @book['id'] %>/update'> Update </a> <br></br>
+<% end %>
+
+<% if @current_user_access['access'] == 'user' || @current_user_access['access'] == 'admin' %>
+  <form action='/books/<%= @book['id'] %>/rate' method='post'>
+    <input type='text' name='score'></input>
+    <button type="submit"> Rate </button>
+  </form>
 <% end %>
 
 <a href='/books'> Hemsida </a>
