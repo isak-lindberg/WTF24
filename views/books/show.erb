@@ -2,7 +2,9 @@
 <pre> 
   <p><%= @book['description'] %></p> 
 
-  <p><%= @rating['score'] %></p>
+  <% if @rating != [] %>
+    <p><%= @rating['score'] %>/5</p>
+  <% end %>
 </pre>
 
 <% if @current_user_access['access'] == 'admin' %>

@@ -47,12 +47,12 @@ class App < Sinatra::Base
 
         post '/books/:id/rate' do |id|
             score = params['score'].to_i
-            book_id = db.execute('SELECT books.id FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE books.id = ?', id)
-            user_id = db.execute('SELECT user.id FROM users INNER JOIN ratings ON ratings.user_id = user.id WHERE user.id = ?', id)
-            if unique_rating = db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ?', @current_user_id) == []
+            book_id = db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE books.id = ?', id).first
+            user_id = db.execute('SELECT * FROM users INNER JOIN ratings ON ratings.user_id = users.id WHERE users.id = ?', id).first
+            if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ?', @current_user_id) == []
                 db_execute('INSERT INTO ratings (score, book_id, user_id) VALUES (?, ?, ?) WHERE id = ?', id)
             else
-                db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, book_id, user_id)
+                db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, book_id['book_id'], user_id['user_id'])
             end
             redirect "/books/#{id}"
 
@@ -67,7 +67,7 @@ class App < Sinatra::Base
 
         get '/books/:id' do |id|
             @book = db.execute('SELECT * FROM books WHERE id = ?', id).first
-            @rating = db.execute('SELECT * FROM ratings INNER JOIN books ON books.id = ratings.book_id WHERE ratings.user_id = ? AND books.id = ?', @current_user_id, id)
+            @rating = db.execute('SELECT * FROM ratings INNER JOIN books ON books.id = ratings.book_id WHERE ratings.user_id = ? AND books.id = ?', @current_user_id, id).first
             erb :'books/show'
         end
 
