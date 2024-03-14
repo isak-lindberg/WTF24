@@ -1,4 +1,5 @@
 require 'debug'
+require 'byebug'
 
 class App < Sinatra::Base
     enable :sessions
@@ -49,15 +50,14 @@ class App < Sinatra::Base
             score = params['score'].to_i
             book_id = db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE books.id = ?', id).first
             user_id = db.execute('SELECT * FROM users INNER JOIN ratings ON ratings.user_id = users.id WHERE users.id = ?', id).first
-            if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ?', @current_user_id) == []
-                db_execute('INSERT INTO ratings (score, book_id, user_id) VALUES (?, ?, ?) WHERE id = ?', id)
+            insert_book_id = book_id['book_id'].to_i
+            insert_user_id = user_id['user_id'].to_i
+            if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ? AND ratings.book_id = ?', @current_user_id, id) == []
+                db_execute('INSERT INTO ratings (score, insert_book_id, insert_user_id) VALUES (?, ?, ?)')
             else
                 db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, book_id['book_id'], user_id['user_id'])
             end
             redirect "/books/#{id}"
-
-            # Att fixa nästa gång:
-            # Varje unik användare måste kunna ha en egen rating av varje unik bok. Försök fixa detta. 
         end
 
         get '/books' do
