@@ -47,15 +47,18 @@ class App < Sinatra::Base
         end
 
         post '/books/:id/rate' do |id|
+            # hämta rating för boken
+            # kolla om rating är nil
+            # isf insert rating
+            # annars update rating
             score = params['score'].to_i
-            book_id = db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE books.id = ?', id).first
-            user_id = db.execute('SELECT * FROM users INNER JOIN ratings ON ratings.user_id = users.id WHERE users.id = ?', id).first
-            insert_book_id = book_id['book_id'].to_i
-            insert_user_id = user_id['user_id'].to_i
-            if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ? AND ratings.book_id = ?', @current_user_id, id) == []
-                db_execute('INSERT INTO ratings (score, insert_book_id, insert_user_id) VALUES (?, ?, ?)')
+            unique_rating = db.execute('SELECT ratings.book_id, ratings.user_id FROM books INNER JOIN ratings ON ratings.book_id = books.id INNER JOIN users ON users.id = ratings.user_id WHERE books.id = ? AND ratings.user_id = ?', id, @current_user_id)
+            if db.execute('SELECT ratings.book_id, ratings.user_id FROM books INNER JOIN ratings ON ratings.book_id = books.id INNER JOIN users ON users.id = ratings.user_id WHERE books.id = ? AND ratings.user_id = ?', id, @current_user_id) == []
+                if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ? AND ratings.book_id = ?', @current_user_id, id) == []
+                    db_execute('INSERT INTO ratings (score, book_id, user_id) VALUES (?, ?, ?)', score, id, @current_user_id)
+                end
             else
-                db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, book_id['book_id'], user_id['user_id'])
+                db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, unique_rating['book_id'], unique_rating['user_id'])
             end
             redirect "/books/#{id}"
         end
