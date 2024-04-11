@@ -12,7 +12,7 @@ class App < Sinatra::Base
         end
 
         before do
-            @current_user_id = 1
+            @current_user_id = 3
             @current_user_access = db.execute('SELECT access FROM users WHERE id = ?', @current_user_id).first
         end
 
@@ -52,10 +52,10 @@ class App < Sinatra::Base
             # isf insert rating
             # annars update rating
             score = params['score'].to_i
-            unique_rating = db.execute('SELECT ratings.book_id, ratings.user_id FROM books INNER JOIN ratings ON ratings.book_id = books.id INNER JOIN users ON users.id = ratings.user_id WHERE books.id = ? AND ratings.user_id = ?', id, @current_user_id)
+            unique_rating = db.execute('SELECT ratings.book_id, ratings.user_id FROM books INNER JOIN ratings ON ratings.book_id = books.id INNER JOIN users ON users.id = ratings.user_id WHERE books.id = ? AND ratings.user_id = ?', id, @current_user_id).first
             if db.execute('SELECT ratings.book_id, ratings.user_id FROM books INNER JOIN ratings ON ratings.book_id = books.id INNER JOIN users ON users.id = ratings.user_id WHERE books.id = ? AND ratings.user_id = ?', id, @current_user_id) == []
                 if db.execute('SELECT * FROM books INNER JOIN ratings ON ratings.book_id = books.id WHERE ratings.user_id = ? AND ratings.book_id = ?', @current_user_id, id) == []
-                    db_execute('INSERT INTO ratings (score, book_id, user_id) VALUES (?, ?, ?)', score, id, @current_user_id)
+                    db.execute('INSERT INTO ratings (score, book_id, user_id) VALUES (?, ?, ?)', score, id, @current_user_id)
                 end
             else
                 db.execute('UPDATE ratings SET score = ? WHERE book_id = ? AND user_id = ?', score, unique_rating['book_id'], unique_rating['user_id'])
