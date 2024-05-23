@@ -7,7 +7,7 @@
   <% end %>
 </pre>
 
-<% if @current_user_access['access'] == 'admin' %>
+<% if @user['access'] == 'admin' %>
   <form action='/books/<%= @book['id'] %>/delete' method='post'> 
     <button type="submit"> Delete </button>
   </form>
@@ -15,7 +15,7 @@
   <a href='/books/<%= @book['id'] %>/update'> Update </a> <br></br>
 <% end %>
 
-<% if @current_user_access['access'] == 'user' || @current_user_access['access'] == 'admin' %>
+<% if @user['access'] == 'user' || @user['access'] == 'admin' %>
   <form action='/books/<%= @book['id'] %>/rate' method='post'>
     <input type='text' name='score'></input>
     <button type="submit"> Rate </button>

@@ -4,7 +4,7 @@
     </li>
 <% end %>
 
-<% if @current_user_access['access'] == 'admin' %>
+<% if @user['access'] == 'admin' %>
   <form action='/books/new' method='post'> 
     <input type='text' name='name'></input>
     <input type='text' name='description'></input>
